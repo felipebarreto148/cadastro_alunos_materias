@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import font
+from tkinter import ttk
 
 # --------- Variables -----------
 app = tk.Tk()
@@ -15,14 +15,18 @@ tk.Button(app, text="Remover Aluno", bg="#bb0000", font=("Arial"), fg="#ffffff")
 
 # ------ Label ------
 tk.Label(app, text="Bem vindo", bg='#ffab65', font=("Arial", 20)).grid(row=0, column=2, padx=35)
-tk.Label(app, text="Alunos", bg='#ffab65', font=("Arial", 20)).grid(row=1, column=1)
-tk.Label(app, text="Matérias", bg='#ffab65', font=("Arial", 20)).grid(row=1, column=3)
+tk.Label(app, text="Alunos", bg='#ffab65', font=("Arial", 20)).grid(row=1, column=0, columnspan=2)
+tk.Label(app, text="Matérias", bg='#ffab65', font=("Arial", 20)).grid(row=1, column=3, columnspan=2)
 
 
 # ------ Buttons Matérias ----
 tk.Button(app, text="Incluir Matéria", bg="#009900", font=("Arial"), fg="#ffffff").grid(row=0, column=3, padx=8, pady=8)
 tk.Button(app, text="Remover Matéria", bg="#bb0000", font=("Arial"), fg="#ffffff").grid(row=0, column=4, padx=8, pady=8)
 
+
+# ------ Tabelas ----
+tableAlunos = ttk.Treeview(app).grid(row=2, column=0, columnspan=2)
+tableMaterias = ttk.Treeview(app).grid(row=2, column=3, columnspan=2)
 
 if __name__ == "__main__":
     app.mainloop()
