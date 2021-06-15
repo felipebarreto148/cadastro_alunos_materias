@@ -1,20 +1,5 @@
+from os import close
 import sqlite3
-
-conn = sqlite3.connect('./cadastro.db')
-cursor = conn.cursor()
-
-
-def connect():
-    query = """ CREATE TABLE IF NOT EXISTS alunos(
-        matricula INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL,
-        idade INTEGER NOT NULL,
-        email TEXT NOT NULL,
-        telefone TEXT NOT NULL
-    ) """
-    cursor.execute(query)
-    conn.commit()
-    conn.close()
 
 
 def insert(nome, idade, email, telefone):
@@ -29,8 +14,10 @@ def insert(nome, idade, email, telefone):
 
 def consult():
     try:
-        query = 'SELECT * FROM alunos'
-        return conn.execute(query)
+        query = 'SELECT * FROM alunos ORDER BY nome'
+        cursor.execute(query) 
+        fetch = cursor.fetchall()
+        return fetch
     except sqlite3.Error as err:
         return 'Erro ao consultar as alunos: ', err
 
@@ -50,5 +37,7 @@ def delete(matricula):
         query = 'DELETE FROM alunos WHERE matricula = ?', (matricula)
         conn.execute(query)
         conn.commit()
+        conn.close()
+        cursor.close()
     except sqlite3.Error as err:
         return 'Erro ao deletar uma aluno ', err

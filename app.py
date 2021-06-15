@@ -3,7 +3,6 @@ from tkinter import ttk
 from tkinter import *
 import tkinter.messagebox as msb
 import sqlite3
-import bdalunos as bdA
 
 # --------- Variables -----------
 app = tk.Tk()
@@ -23,8 +22,30 @@ idade = StringVar()
 email = StringVar()
 telefone = StringVar()
 
+updateWindow = None
+matricula = None
+
 # ----- METODOS -----
-def submitData():
+def init():
+    conn = sqlite3.connect('./cadastro.db')
+    cursor = conn.cursor()
+    query = """ CREATE TABLE IF NOT EXISTS alunos(
+        matricula INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        idade INTEGER NOT NULL,
+        email TEXT NOT NULL,
+        telefone TEXT NOT NULL
+    ) """
+    cursor.execute(query)
+    query = """SELECT * FROM alunos ORDER BY nome"""
+    cursor.execute(query)
+    fetch = cursor.fetchall()
+    for data in fetch:
+        tableAlunos.insert('', 'end', values=(data))
+    conn.commit()
+    conn.close()
+
+def submitAluno():
     if nome.get() == "" or telefone.get() == "" or idade.get() == "" or email.get() == "":
         resultado = msb.showwarning("", "Por favor, digite todos os campos.", icon="warning")
     else:
@@ -35,7 +56,7 @@ def submitData():
         cursor.execute(query, (str(nome.get()), str(telefone.get()), 
                         str(email.get()), str(idade.get())))
         conn.commit()
-        cursor.execute('SELECT * FROM alunos ORDER BY nome')
+        cursor.execute('SELECT * FROM alunos ORDER BY matricula')
         fetch = cursor.fetchall()
         for data in fetch:
             tableAlunos.insert('', 'end', values=(data))
@@ -46,11 +67,56 @@ def submitData():
         idade.set("")
         email.set("")
 
+def updateAluno():
+    tableAlunos.delete(*tableAlunos.get_children())
+    conn = sqlite3.connect("./cadastro.db")
+    cursor = conn.cursor()
+    query = """ UPDATE 'alunos' SET nome = ?, telefone = ?, idade = ?, email = ? WHERE matricula = ?"""
+    cursor.execute(query, (str(nome.get()), str(telefone.get()),
+                           str(idade.get()), str(email.get()), int(matricula)))
+    conn.commit()
+    cursor.execute('SELECT * FROM alunos ORDER BY matricula')
+    fetch = cursor.fetchall()
+    for data in fetch:
+        tableAlunos.insert('', 'end', values=(data))
+    cursor.close()
+    conn.close()
+    nome.set("")
+    telefone.set("")
+    idade.set("")
+    email.set("")
+    updateWindow.destroy()
 
-def addAluno():
+
+# ---------- Functions / telas ---------
+
+def deletarAluno():
+    if not tableAlunos.selection():
+        resultado = msb.showwarning("", "Por favor, selecione um item na lista para remover.", icon="warning")
+    else:
+        resultado = msb.askquestion("", "Tem certeza que deseja deletar o contato?")
+        if resultado == 'yes':
+            selectItem = tableAlunos.focus()
+            conteudo = (tableAlunos.item(selectItem))
+            selectedItem = conteudo['values']
+            tableAlunos.delete(selectItem)
+            conn = sqlite3.connect("./cadastro.db")
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM 'alunos' WHERE matricula = %d" % selectedItem[0])
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+def adicionarAluno():
     newWin = tk.Toplevel()
     newWin.title('Cadastrar Aluno')
-    newWin.geometry('400x300')
+    width = 400
+    height = 300
+    sc_width = newWin.winfo_screenwidth()
+    sc_height = newWin.winfo_screenheight()
+    x = (sc_width/2) - (width/2)
+    y = (sc_height/2) - (height/2)
+    newWin.geometry("%dx%d+%d+%d" % (width, height, x, y))
     newWin.config(bg='#119922')
     newWin.resizable(0, 0)
 
@@ -73,12 +139,66 @@ def addAluno():
     Entry(formContact, textvariable=email, font=('arial', 12)).grid(row=3, column=1)
 
     # --------- BUTTON DO INCLUDE ---------
-    Button(formContact, text="Inserir", font=('Arial', 18), command=submitData).grid(row=6, columnspan=2, pady=10)
+    Button(formContact, text="Inserir", font=('Arial', 18), command=submitAluno).grid(row=6, columnspan=2, pady=10)
+
+def editarAluno():
+    if not tableAlunos.selection():
+        resultado = msb.showwarning('', 'Por favor, selecione um aluno na lista para editar.', icon="warning")
+    else:
+        global matricula, updateWindow
+        selectItem = tableAlunos.focus()
+        conteudo = (tableAlunos.item(selectItem))
+        selectedItem = conteudo["values"]
+        matricula = selectedItem[0]
+        nome.set("")
+        telefone.set("")
+        idade.set("")
+        email.set("")
+        nome.set(selectedItem[1])
+        telefone.set(selectedItem[2])
+        idade.set(selectedItem[3])
+        email.set(selectedItem[4])
+
+        #--------- CRIANDO JANELA UPDATE ---------
+        updateWindow = Toplevel()
+        updateWindow.title("Atualizar Aluno")
+        width = 400
+        height = 300
+        sc_width = updateWindow.winfo_screenwidth()
+        sc_height = updateWindow.winfo_screenheight()
+        x = (sc_width/2) - (width/2)
+        y = (sc_height/2) - (height/2)
+        updateWindow.geometry("%dx%d+%d+%d" % (width, height, x, y))
+        updateWindow.resizable(0, 0)
+        updateWindow.config(bg='#335599')
+
+        # --------- FRAME DO ATUALIZAR ----------
+        formTitle = Frame(updateWindow)
+        formTitle.pack(side=TOP)
+        formContact = Frame(updateWindow, bg='#335599')
+        formContact.pack(side = TOP, pady = 10)
+        # --------- LABEL DO ATUALIZAR ----------
+        Label(formTitle, bg='#335599', fg='#ffffff', text="Atualizando contato", font=('arial', 18), width=300).pack(fill=X)
+        Label(formContact, bg='#335599', fg='#ffffff', text="Nome", font=('arial', 12)).grid(row=0, sticky=W, pady=8)
+        Label(formContact, bg='#335599', fg='#ffffff', text="Telefone", font=('arial', 12)).grid(row=1, sticky=W, pady=8)
+        Label(formContact, bg='#335599', fg='#ffffff', text="Idade", font=('arial', 12)).grid(row=2, sticky=W, pady=8)
+        Label(formContact, bg='#335599', fg='#ffffff', text="Email", font=('arial', 12)).grid(row=3, sticky=W, pady=8)
+
+        # --------- ENTRY DO ATUALIZAR ----------
+        Entry(formContact, textvariable=nome, font=('arial', 12)).grid(row=0, column=1)
+        Entry(formContact, textvariable=telefone, font=('arial', 12)).grid(row=1, column=1)
+        Entry(formContact, textvariable=idade, font=('arial', 12)).grid(row=2, column=1)
+        Entry(formContact, textvariable=email, font=('arial', 12)).grid(row=3, column=1)
+        
+        # --------- BUTTON DO ATUALIZAR ---------
+        Button(formContact, bg='#335599', fg="#ffffff", text="Atualizar", font=('Arial', 18), command=updateAluno).grid(row=6, columnspan=2, pady=10)
 
 
 # # ------ Buttons Aluno -------
-tk.Button(app, text="Incluir Aluno", bg="#009900", font=("Arial"), fg="#ffffff", command=addAluno).grid(row=0, column=0, padx=8)
-tk.Button(app, text="Remover Aluno", bg="#bb0000", font=("Arial"), fg="#ffffff").grid(row=1, column=0, padx=8, pady=8)
+tk.Button(app, text="Incluir Aluno", bg="#009900", font=("Arial"), fg="#ffffff", command=adicionarAluno).grid(row=0, column=0, padx=8)
+tk.Button(app, text="Editar Aluno", bg="#0000ff", font=("Arial"), fg="#ffffff", command=editarAluno).grid(row=1, column=0, padx=8, pady=8)
+tk.Button(app, text="Remover Aluno", bg="#bb0000", font=("Arial"), fg="#ffffff", command=deletarAluno).grid(row=2, column=0, padx=8, pady=8)
+
 
 
 # ------ Tabelas ----
@@ -101,27 +221,7 @@ tableAlunos.column('#3', stretch=NO, minwidth=0, width=50)
 tableAlunos.column('#4', stretch=NO, minwidth=0, width=150)
 tableAlunos.column('#5', stretch=NO, minwidth=0, width=100)
 
-tableAlunos.grid(row=0, column=2, padx=(8, 0), pady=8, rowspan=2)
-
-    #----- Table Notas -----
-# tableNotas = ttk.Treeview(app, columns=columnsN, show="headings")
-
-# tableNotas.heading("Materia", text="Matéria", anchor=W)
-# tableNotas.heading("AV1", text="AV1", anchor=W)
-# tableNotas.heading("AV2", text="AV2", anchor=W)
-# tableNotas.heading("AV3", text="AV3", anchor=W)
-# tableNotas.heading("AVD", text="AVD", anchor=W)
-# tableNotas.heading("AVDS", text="AVDS", anchor=W)
-# tableNotas.heading("Media", text="Media", anchor=W)
-
-# tableNotas.column('#1', stretch=NO, minwidth=0, width=100)
-# tableNotas.column('#2', stretch=NO, minwidth=0, width=50)
-# tableNotas.column('#3', stretch=NO, minwidth=0, width=50)
-# tableNotas.column('#4', stretch=NO, minwidth=0, width=50)
-# tableNotas.column('#5', stretch=NO, minwidth=0, width=50)
-# tableNotas.column('#6', stretch=NO, minwidth=0, width=50)
-
-# tableNotas.grid(row=2, column=3, columnspan=2)
+tableAlunos.grid(row=0, column=2, padx=(8, 0), pady=8, rowspan=3)
 
 
 # ------------------ Criação do Menu ------------------
@@ -131,7 +231,7 @@ app.config(menu=menu)
 # Menu Aluno
 fileMenu = Menu(menu, tearoff = 0)
 menu.add_cascade(label="Alunos", menu=fileMenu)
-fileMenu.add_command(label="Criar Novo", command=addAluno)
+fileMenu.add_command(label="Criar Novo", command=adicionarAluno)
 fileMenu.add_command(label="Editar", command=inserirData)
 fileMenu.add_command(label="Deletar", command=inserirData)
 fileMenu.add_separator()
@@ -148,5 +248,5 @@ fileMenu.add_command(label="Sair", command=app.destroy)
 
 
 if __name__ == "__main__":
-    bdA.connect()
+    init()
     app.mainloop()
