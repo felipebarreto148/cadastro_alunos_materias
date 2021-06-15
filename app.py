@@ -25,6 +25,16 @@ telefone = StringVar()
 updateWindow = None
 matricula = None
 
+# ----- VARIAVEIS NOTAS -----
+winNotas = None
+materia = StringVar()
+AV1 = StringVar()
+AV2 = StringVar()
+AV3 = StringVar()
+AVD = StringVar()
+AVDS = StringVar()
+media = StringVar()
+
 # ----- METODOS -----
 def init():
     conn = sqlite3.connect('./cadastro.db')
@@ -88,7 +98,7 @@ def updateAluno():
     updateWindow.destroy()
 
 
-# ---------- Functions / telas ---------
+# ---------- Functions / telas DO ALUNO ---------
 
 def deletarAluno():
     if not tableAlunos.selection():
@@ -194,11 +204,33 @@ def editarAluno():
         Button(formContact, bg='#335599', fg="#ffffff", text="Atualizar", font=('Arial', 18), command=updateAluno).grid(row=6, columnspan=2, pady=10)
 
 
+# ---------- FUNCTIONS / TELAS DAS NOTAS --------
+def visualizarNotas(event):
+    global winNotas
+    materia.set("")
+    AV1.set("")
+    AV2.set("")
+    AV3.set("")
+    AVD.set("")
+    AVDS.set("")
+    media.set("")
+
+    winNotas = tk.Toplevel()
+    winNotas.title("Notas")
+    width = 500
+    height = 400
+    sc_width = winNotas.winfo_screenwidth()
+    sc_height = winNotas.winfo_screenheight()
+    x = (sc_width/2) - (width/2)
+    y = (sc_height/2) - (height/2)
+    winNotas.geometry("%dx%d+%d+%d" % (width, height, x, y))
+    winNotas.resizable(0, 0)
+
+
 # # ------ Buttons Aluno -------
 tk.Button(app, text="Incluir Aluno", bg="#009900", font=("Arial"), fg="#ffffff", command=adicionarAluno).grid(row=0, column=0, padx=8)
 tk.Button(app, text="Editar Aluno", bg="#0000ff", font=("Arial"), fg="#ffffff", command=editarAluno).grid(row=1, column=0, padx=8, pady=8)
 tk.Button(app, text="Remover Aluno", bg="#bb0000", font=("Arial"), fg="#ffffff", command=deletarAluno).grid(row=2, column=0, padx=8, pady=8)
-
 
 
 # ------ Tabelas ----
@@ -207,7 +239,7 @@ columnsA = ("Matricula", "Nome", "Idade", "Email", "Telefone" )
 #columnsN = ("Materia", "AV1", "AV2", "AV3", "AVD", "AVDS", "Media")
 
 #     #----- Table Alunos -----
-tableAlunos = ttk.Treeview(app, columns=columnsA, show="headings")
+tableAlunos = ttk.Treeview(app, columns=columnsA, show="headings", selectmode="extended")
 
 tableAlunos.heading("Matricula", text="ID", anchor=W)
 tableAlunos.heading("Nome", text="Nome", anchor=W)
@@ -222,29 +254,7 @@ tableAlunos.column('#4', stretch=NO, minwidth=0, width=150)
 tableAlunos.column('#5', stretch=NO, minwidth=0, width=100)
 
 tableAlunos.grid(row=0, column=2, padx=(8, 0), pady=8, rowspan=3)
-
-
-# ------------------ Criação do Menu ------------------
-menu = Menu(app)
-app.config(menu=menu)
-
-# Menu Aluno
-fileMenu = Menu(menu, tearoff = 0)
-menu.add_cascade(label="Alunos", menu=fileMenu)
-fileMenu.add_command(label="Criar Novo", command=adicionarAluno)
-fileMenu.add_command(label="Editar", command=inserirData)
-fileMenu.add_command(label="Deletar", command=inserirData)
-fileMenu.add_separator()
-fileMenu.add_command(label="Sair", command=app.destroy)
-
-# Menu Matéria
-fileMenu = Menu(menu, tearoff = 0)
-menu.add_cascade(label="Matérias", menu=fileMenu)
-fileMenu.add_command(label="Criar Nova", command=inserirData)
-fileMenu.add_command(label="Editar", command=inserirData)
-fileMenu.add_command(label="Remover", command=inserirData)
-fileMenu.add_separator()
-fileMenu.add_command(label="Sair", command=app.destroy)
+tableAlunos.bind('<Double-Button-1>', visualizarNotas)
 
 
 if __name__ == "__main__":
