@@ -8,12 +8,14 @@ import sqlite3
 app = tk.Tk()
 app.title('Cadastro de alunos e notas')
 app.resizable(False, False)
-
-app.geometry('700x400')
+width = 700
+height = 500
+sc_width = app.winfo_screenwidth()
+sc_height = app.winfo_screenheight()
+x = (sc_width/2) - (width/2)
+y = (sc_height/2) - (height/2)
+app.geometry("%dx%d+%d+%d" % (width, height, x, y))
 app.config(bg='#167ec4')
-
-def inserirData():
-    pass
 
 
 # ----- VARIAVEIS ALUNO -----
@@ -99,12 +101,11 @@ def updateAluno():
 
 
 # ---------- Functions / telas DO ALUNO ---------
-
 def deletarAluno():
     if not tableAlunos.selection():
         resultado = msb.showwarning("", "Por favor, selecione um item na lista para remover.", icon="warning")
     else:
-        resultado = msb.askquestion("", "Tem certeza que deseja deletar o contato?")
+        resultado = msb.askquestion("", "Tem certeza que deseja excluir o aluno?")
         if resultado == 'yes':
             selectItem = tableAlunos.focus()
             conteudo = (tableAlunos.item(selectItem))
@@ -188,7 +189,7 @@ def editarAluno():
         formContact = Frame(updateWindow, bg='#335599')
         formContact.pack(side = TOP, pady = 10)
         # --------- LABEL DO ATUALIZAR ----------
-        Label(formTitle, bg='#335599', fg='#ffffff', text="Atualizando contato", font=('arial', 18), width=300).pack(fill=X)
+        Label(formTitle, bg='#335599', fg='#ffffff', text="Atualizando Aluno", font=('arial', 18), width=300).pack(fill=X)
         Label(formContact, bg='#335599', fg='#ffffff', text="Nome", font=('arial', 12)).grid(row=0, sticky=W, pady=8)
         Label(formContact, bg='#335599', fg='#ffffff', text="Telefone", font=('arial', 12)).grid(row=1, sticky=W, pady=8)
         Label(formContact, bg='#335599', fg='#ffffff', text="Idade", font=('arial', 12)).grid(row=2, sticky=W, pady=8)
@@ -202,7 +203,6 @@ def editarAluno():
         
         # --------- BUTTON DO ATUALIZAR ---------
         Button(formContact, bg='#335599', fg="#ffffff", text="Atualizar", font=('Arial', 18), command=updateAluno).grid(row=6, columnspan=2, pady=10)
-
 
 # ---------- FUNCTIONS / TELAS DAS NOTAS --------
 def visualizarNotas(event):
