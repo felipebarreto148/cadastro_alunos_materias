@@ -254,6 +254,15 @@ def visualizarNotas(event):
     tableNotas.column('#7', stretch=NO, minwidth=0, width=60)
 
     tableNotas.grid(row=0, column=2, padx=20, pady=8, rowspan=3)
+    tableNotas.bind('<Double-Button-1>', visualizarNotas)
+
+
+def submitNota():
+    pass
+
+def updateNota():
+    pass
+
 
 
 def create_table_notas():
@@ -330,10 +339,10 @@ def adicionarNota():
     Entry(formContact, textvariable=AVDS, font=('arial', 12)).grid(row=5, column=1)
 
     # --------- BUTTON DO INCLUDE ---------
-    Button(formContact, text="Inserir", font=('Arial', 18), command=submitAluno).grid(row=6, columnspan=2, pady=10)
+    Button(formContact, text="Inserir", font=('Arial', 18), command=submitNota).grid(row=6, columnspan=2, pady=10)
 
 def editarNota():
-    if not tableAlunos.selection():
+    if not tableNotas.selection():
         resultado = msb.showwarning('', 'Por favor, selecione um aluno na lista para editar.', icon="warning")
     else:
         global matricula, updateWindow
@@ -341,18 +350,22 @@ def editarNota():
         conteudo = (tableAlunos.item(selectItem))
         selectedItem = conteudo["values"]
         matricula = selectedItem[0]
-        nome.set("")
-        telefone.set("")
-        idade.set("")
-        email.set("")
-        nome.set(selectedItem[1])
-        telefone.set(selectedItem[2])
-        idade.set(selectedItem[3])
-        email.set(selectedItem[4])
-
+        materia.set("")
+        AV1.set("")
+        AV2.set("")
+        AV3.set("")
+        AVD.set("")
+        AVDS.set("")
+        materia.set(selectedItem[1])
+        AV1.set(selectedItem[2])
+        AV2.set(selectedItem[3])
+        AV3.set(selectedItem[4])
+        AVD.set(selectedItem[5])
+        AVDS.set(selectedItem[6])
+        
         #--------- CRIANDO JANELA UPDATE ---------
         updateWindow = Toplevel()
-        updateWindow.title("Atualizar Aluno")
+        updateWindow.title("Atualizar Notas")
         width = 400
         height = 300
         sc_width = updateWindow.winfo_screenwidth()
@@ -368,22 +381,26 @@ def editarNota():
         formTitle.pack(side=TOP)
         formContact = Frame(updateWindow, bg='#335599')
         formContact.pack(side = TOP, pady = 10)
-        # --------- LABEL DO ATUALIZAR ----------
-        Label(formTitle, bg='#335599', fg='#ffffff', text="Atualizando contato", font=('arial', 18), width=300).pack(fill=X)
-        Label(formContact, bg='#335599', fg='#ffffff', text="Nome", font=('arial', 12)).grid(row=0, sticky=W, pady=8)
-        Label(formContact, bg='#335599', fg='#ffffff', text="Telefone", font=('arial', 12)).grid(row=1, sticky=W, pady=8)
-        Label(formContact, bg='#335599', fg='#ffffff', text="Idade", font=('arial', 12)).grid(row=2, sticky=W, pady=8)
-        Label(formContact, bg='#335599', fg='#ffffff', text="Email", font=('arial', 12)).grid(row=3, sticky=W, pady=8)
+        
+        # --------- LABEL DO Atualizar ----------
+        Label(formTitle, text="Inserindo Notas", font=('arial', 18), fg= '#ffffff', bg='#119922').pack(fill=X)
+        Label(formContact, text="Matéria", font=('arial', 12), bg='#119922', fg='#ffffff').grid(row=0, sticky=W, pady=8)
+        Label(formContact, text="AV1", font=('arial', 12), bg='#119922', fg='#ffffff').grid(row=1, sticky=W, pady=8)
+        Label(formContact, text="AV2", font=('arial', 12), bg='#119922', fg='#ffffff').grid(row=2, sticky=W, pady=8)
+        Label(formContact, text="AV3", font=('arial', 12), bg='#119922', fg='#ffffff').grid(row=3, sticky=W, pady=8)
+        Label(formContact, text="AVD", font=('arial', 12), bg='#119922', fg='#ffffff').grid(row=4, sticky=W, pady=8)
+        Label(formContact, text="AVDS", font=('arial', 12), bg='#119922', fg='#ffffff').grid(row=5, sticky=W, pady=8)
 
-        # --------- ENTRY DO ATUALIZAR ----------
-        Entry(formContact, textvariable=nome, font=('arial', 12)).grid(row=0, column=1)
-        Entry(formContact, textvariable=telefone, font=('arial', 12)).grid(row=1, column=1)
-        Entry(formContact, textvariable=idade, font=('arial', 12)).grid(row=2, column=1)
-        Entry(formContact, textvariable=email, font=('arial', 12)).grid(row=3, column=1)
+        # --------- ENTRY DO INCLUDE ----------
+        Entry(formContact, textvariable=materia, font=('arial', 12)).grid(row=0, column=1)
+        Entry(formContact, textvariable=AV1, font=('arial', 12)).grid(row=1, column=1)
+        Entry(formContact, textvariable=AV2, font=('arial', 12)).grid(row=2, column=1)
+        Entry(formContact, textvariable=AV3, font=('arial', 12)).grid(row=3, column=1)
+        Entry(formContact, textvariable=AVD, font=('arial', 12)).grid(row=4, column=1)
+        Entry(formContact, textvariable=AVDS, font=('arial', 12)).grid(row=5, column=1)
         
         # --------- BUTTON DO ATUALIZAR ---------
-        Button(formContact, bg='#335599', fg="#ffffff", text="Atualizar", font=('Arial', 18), command=updateAluno).grid(row=6, columnspan=2, pady=10)
-
+        Button(formContact, bg='#335599', fg="#ffffff", text="Atualizar", font=('Arial', 18), command=updateNota).grid(row=6, columnspan=2, pady=10)
 
 
 
