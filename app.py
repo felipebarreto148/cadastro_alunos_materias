@@ -8,12 +8,14 @@ import sqlite3
 app = tk.Tk()
 app.title('Cadastro de alunos e notas')
 app.resizable(False, False)
-
-app.geometry('700x400')
+width = 700
+height = 500
+sc_width = app.winfo_screenwidth()
+sc_height = app.winfo_screenheight()
+x = (sc_width/2) - (width/2)
+y = (sc_height/2) - (height/2)
+app.geometry("%dx%d+%d+%d" % (width, height, x, y))
 app.config(bg='#167ec4')
-
-def inserirData():
-    pass
 
 
 # ----- VARIAVEIS ALUNO -----
@@ -100,12 +102,11 @@ def updateAluno():
 
 
 # ---------- Functions / telas DO ALUNO ---------
-
 def deletarAluno():
     if not tableAlunos.selection():
         resultado = msb.showwarning("", "Por favor, selecione um item na lista para remover.", icon="warning")
     else:
-        resultado = msb.askquestion("", "Tem certeza que deseja deletar o contato?")
+        resultado = msb.askquestion("", "Tem certeza que deseja excluir o aluno?")
         if resultado == 'yes':
             selectItem = tableAlunos.focus()
             conteudo = (tableAlunos.item(selectItem))
@@ -189,7 +190,7 @@ def editarAluno():
         formContact = Frame(updateWindow, bg='#335599')
         formContact.pack(side = TOP, pady = 10)
         # --------- LABEL DO ATUALIZAR ----------
-        Label(formTitle, bg='#335599', fg='#ffffff', text="Atualizando contato", font=('arial', 18), width=300).pack(fill=X)
+        Label(formTitle, bg='#335599', fg='#ffffff', text="Atualizando Aluno", font=('arial', 18), width=300).pack(fill=X)
         Label(formContact, bg='#335599', fg='#ffffff', text="Nome", font=('arial', 12)).grid(row=0, sticky=W, pady=8)
         Label(formContact, bg='#335599', fg='#ffffff', text="Telefone", font=('arial', 12)).grid(row=1, sticky=W, pady=8)
         Label(formContact, bg='#335599', fg='#ffffff', text="Idade", font=('arial', 12)).grid(row=2, sticky=W, pady=8)
@@ -203,6 +204,7 @@ def editarAluno():
         
         # --------- BUTTON DO ATUALIZAR ---------
         Button(formContact, bg='#335599', fg="#ffffff", text="Atualizar", font=('Arial', 18), command=updateAluno).grid(row=6, columnspan=2, pady=10)
+
 
 
 # ---------- FUNCTIONS / TELAS DAS NOTAS --------
@@ -258,24 +260,72 @@ def visualizarNotas(event):
 
 
 def submitNota():
-    pass
-
+    create_table_notas()
+    global media
+    if materia.get() == "" or AV1.get() == 0 or AV2.get() == 0 or AVD.get() == 0:
+        resultado = msb.showwarning("", "Por favor, digite todos os campos.", icon="warning")
+    else:
+        if AV3.get() == 0:
+            AV3.set(0)
+    
+        if AVDS.get() == 0:
+            AVDS.set(0)
+        tableNotas.delete(*tableNotas.get_children())
+        conn = sqlite3.connect("./cadastro.db")
+        cursor = conn.cursor()
+        query = """INSERT INTO 'notas' (materia, AV1, AV2, AV3, AVD, AVDS, media) VALUES (?, ?, ?, ?, ?, ?, ?)"""
+        cursor.execute(query, (str(materia.get()), str(AV1.get()), 
+                        str(AV2.get()), str(AV3.get()), str(AVD.get()), str(AVDS.get()), str(media.get())))
+        conn.commit()
+        cursor.execute('SELECT * FROM notas ORDER BY materia')
+        fetch = cursor.fetchall()
+        for data in fetch:
+            tableNotas.insert('', 'end', values=(data))
+        cursor.close()
+        conn.close()
+        materia.set("")
+        AV1.set("")
+        AV2.set("")
+        AV3.set("")
+        AVD.set("")
+        AVDS.set("")
+        media.set("")
+        
 def updateNota():
     pass
 
+def calcularMedia():
+    global media
+    notas =  [AV1.get(), AV2.get(), AVD.get()]
+    if AV1.get() < AV3.get() or AV2.get() < AV3.get():
+        if AV1.get() < AV2.get():
+            notas.insert(0, AV3.get())
+        else:
+            notas.insert(1, AV3.get())
+    
+    if AVD.get() < AVDS.get():
+        notas.insert(2, AVDS.get())
+    
+    total = 0
+    for nota in notas:
+        total += nota
+
+    media = total/len(notas)    
 
 
 def create_table_notas():
     conn = sqlite3.connect('./cadastro.db')
     cursor = conn.cursor()
     query = """ CREATE TABLE IF NOT EXISTS notas(
-        materia INTEGER NOT NULL PRIMARY KEY,
-        av1 INTEGER NOT NULL,
-        av2 INTEGER NOT NULL,
-        av3 INTEGER NOT NULL,
-        avd INTEGER NOT NULL,
-        avds INTEGER NOT NULL
-        CONSTRAINT matricula FOREIGN KEY (matricula) REFERENCES alunos (matricula)
+        materia TEXT NOT NULL PRIMARY KEY,
+        AV1 REAL NOT NULL,
+        AV2 REAL NOT NULL,
+        AV3 REAL NOT NULL,
+        AVD REAL NOT NULL,
+        AVDS REAL NOT NULL,
+        media REAL NOT NULL,
+        matricula_aluno INTEGER,
+        FOREIGN KEY (matricula_aluno) REFERENCES alunos(matricula)
     ) """
     cursor.execute(query)
     query = """SELECT * FROM notas ORDER BY materia"""
