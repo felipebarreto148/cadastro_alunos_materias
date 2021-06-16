@@ -1,8 +1,9 @@
-import tkinter as tk
+""" import tkinter as tk
 from tkinter import ttk
 from tkinter import *
 import tkinter.messagebox as msb
-import sqlite3
+
+import bd as bd
 
 # --------- Variables -----------
 app = tk.Tk()
@@ -53,8 +54,7 @@ def init():
     query = """SELECT * FROM alunos ORDER BY nome"""
     cursor.execute(query)
     fetch = cursor.fetchall()
-    for data in fetch:
-        tableAlunos.insert('', 'end', values=(data))
+    
     conn.commit()
     conn.close()
 
@@ -317,7 +317,8 @@ def create_table_notas():
     conn = sqlite3.connect('./cadastro.db')
     cursor = conn.cursor()
     query = """ CREATE TABLE IF NOT EXISTS notas(
-        materia TEXT NOT NULL PRIMARY KEY,
+        id_materia INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        materia TEXT NOT NULL,
         AV1 REAL NOT NULL,
         AV2 REAL NOT NULL,
         AV3 REAL NOT NULL,
@@ -483,5 +484,6 @@ tableAlunos.bind('<Double-Button-1>', visualizarNotas)
 
 
 if __name__ == "__main__":
-    init()
-    app.mainloop()
+    bd.init()
+    #init()
+    app.mainloop() """
