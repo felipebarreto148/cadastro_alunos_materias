@@ -403,8 +403,7 @@ def editarNota():
         Button(formContact, bg='#335599', fg="#ffffff", text="Atualizar", font=('Arial', 18), command=updateNota).grid(row=6, columnspan=2, pady=10)
 
 
-
-# # ------ Buttons Aluno -------
+# ------ Buttons Aluno -------
 tk.Button(app, text="Incluir Aluno", bg="#009900", font=("Arial"), fg="#ffffff", command=adicionarAluno).grid(row=0, column=0, padx=8)
 tk.Button(app, text="Editar Aluno", bg="#0000ff", font=("Arial"), fg="#ffffff", command=editarAluno).grid(row=1, column=0, padx=8, pady=8)
 tk.Button(app, text="Remover Aluno", bg="#bb0000", font=("Arial"), fg="#ffffff", command=deletarAluno).grid(row=2, column=0, padx=8, pady=8)
