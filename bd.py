@@ -33,10 +33,11 @@ def inserir_aluno(nome, idade, email, telefone):
     conn.close()
 
 def remover_aluno(matricula):
+    print(type(matricula))
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ DELETE FROM 'alunos' WHERE matricula = (?) """
-    cursor.execute(query, (matricula))
+    query = """ DELETE FROM 'alunos' WHERE matricula = ? """
+    cursor.execute(query, (matricula, ))
     conn.commit()
     cursor.close()
     conn.close()
@@ -44,15 +45,15 @@ def remover_aluno(matricula):
 def editar_aluno(matricula, nome, idade, email, telefone):
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ UPDATE 'alunos' SET nome = ?, telefone = ?, idade = ?, email = ? WHERE matricula = ?"""
-    cursor.execute(query, (matricula, nome, idade, email, telefone))
+    query = """ UPDATE 'alunos' SET nome = ?, idade = ?, email = ?, telefone = ? WHERE matricula = ?"""
+    cursor.execute(query, (nome, idade, email, telefone, matricula))
     cursor.close()
     conn.close()
 
 def consultar_alunos():
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ SELECT * FROM alunos ORDER BY nome """
+    query = """ SELECT * FROM alunos ORDER BY matricula """
     cursor.execute(query)
     fetch = cursor.fetchall()
     cursor.close()
@@ -75,7 +76,7 @@ def table_materias():
 def inserir_materia(materia):
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ INSERT INTO 'materias' (materias) VALUES (?) """
+    query = """ INSERT INTO 'materias' (materias) VALUES ? """
     cursor.execute(query, (materia))
     conn.commit()
     cursor.close()
@@ -84,8 +85,8 @@ def inserir_materia(materia):
 def remover_materia(id_materia):
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ DELETE FROM 'materia' WHERE id_materia = (?) """
-    cursor.execute(query, (id_materia))
+    query = """ DELETE FROM 'materia' WHERE id_materia = ? """
+    cursor.execute(query, (id_materia, ))
     conn.commit()
     cursor.close()
     conn.close()
@@ -141,8 +142,8 @@ def inserir_nota(av1, av2, av3, avd, avds, media):
 def remover_nota(matricula_aluno, id_materia):
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ DELETE FROM 'notas' WHERE matricula_aluno = (?) AND id_materia = (?) """
-    cursor.execute(query, (matricula_aluno, id_materia))
+    query = """ DELETE FROM 'notas' WHERE matricula_aluno = ? AND id_materia = ? """
+    cursor.execute(query, (matricula_aluno, id_materia, ))
     conn.commit()
     cursor.close()
     conn.close()
