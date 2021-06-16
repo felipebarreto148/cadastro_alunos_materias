@@ -21,6 +21,7 @@ app.config(bg='#167ec4')
 
 
 # ----------- Variaveis ------------
+    
     # --------- Telas -----------
 updateWindow = None
 
@@ -40,7 +41,7 @@ def consultarAlunos():
     for data in fetch:
         tableAlunos.insert('', 'end', values=(data))
 
-def inserirDados():
+def inserirDadosAlunos():
     if nome.get() == "" or telefone.get() == "" or idade.get() == "" or email.get() == "":
         resultado = msb.showwarning("", "Por favor, digite todos os campos.", icon="warning")
     else:
@@ -51,7 +52,7 @@ def inserirDados():
         idade.set("")
         email.set("")
 
-def atualizarDados():
+def atualizarDadosAlunos():
     tableAlunos.delete(*tableAlunos.get_children())
     bd.editar_aluno(int(matricula), str(nome.get()), int(idade.get()), str(email.get()), str(telefone.get()))
     consultarAlunos()
@@ -95,7 +96,7 @@ def adicionarAluno():
     Entry(formContact, textvariable=email, font=('arial', 12)).grid(row=3, column=1)
 
     # --------- BUTTON DO INCLUDE ---------
-    Button(formContact, text="Inserir", font=('Arial', 18), command=inserirDados).grid(row=6, columnspan=2, pady=10)
+    Button(formContact, text="Inserir", font=('Arial', 18), command=inserirDadosAlunos).grid(row=6, columnspan=2, pady=10)
 
 def deletarAluno():
     if not tableAlunos.selection():
@@ -160,15 +161,14 @@ def editarAluno():
         Entry(formContact, textvariable=email, font=('arial', 12)).grid(row=3, column=1)
         
         # --------- BUTTON DO ATUALIZAR ---------
-        Button(formContact, bg='#335599', fg="#ffffff", text="Atualizar", font=('Arial', 18), command=atualizarDados).grid(row=6, columnspan=2, pady=10)
+        Button(formContact, bg='#335599', fg="#ffffff", text="Atualizar", font=('Arial', 18), command=atualizarDadosAlunos).grid(row=6, columnspan=2, pady=10)
 
 
 
 # ---------- Buttons Alunos ---------
-tk.Button(app, text="Incluir Aluno", bg="#009900", font=("Arial"), fg="#ffffff", command=adicionarAluno).grid(row=0, column=0, padx=8, pady=8)
-tk.Button(app, text="Editar Aluno", bg="#0000ff", font=("Arial"), fg="#ffffff", command=editarAluno).grid(row=1, column=0, padx=8, pady=8)
-tk.Button(app, text="Remover Aluno", bg="#bb0000", font=("Arial"), fg="#ffffff", command=deletarAluno).grid(row=2, column=0, padx=8, pady=8)
-
+tk.Button(app, text="Incluir Aluno", bg="#009900", font=("Arial"), fg="#ffffff", command=adicionarAluno).grid(row=1, column=0, padx=8, pady=8)
+tk.Button(app, text="Editar Aluno", bg="#0000ff", font=("Arial"), fg="#ffffff", command=editarAluno).grid(row=2, column=0, padx=8, pady=8)
+tk.Button(app, text="Remover Aluno", bg="#bb0000", font=("Arial"), fg="#ffffff", command=deletarAluno).grid(row=3, column=0, padx=8, pady=8)
 
 # ---------- Tabela Alunos ---------
     # ---- Columns -----
@@ -189,7 +189,7 @@ tableAlunos.column('#3', stretch=NO, minwidth=0, width=50)
 tableAlunos.column('#4', stretch=NO, minwidth=0, width=150)
 tableAlunos.column('#5', stretch=NO, minwidth=0, width=100)
 
-tableAlunos.grid(row=0, column=2, padx=(8, 0), pady=8, rowspan=3)
+tableAlunos.grid(row=1, column=2, padx=(8, 0), pady=8, rowspan=3)
 #tableAlunos.bind('<Double-Button-1>', visualizarNotas)
 
 
