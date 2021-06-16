@@ -43,10 +43,12 @@ def remover_aluno(matricula):
     conn.close()
 
 def editar_aluno(matricula, nome, idade, email, telefone):
+    print(matricula, nome, idade, email, telefone)
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
     query = """ UPDATE 'alunos' SET nome = ?, idade = ?, email = ?, telefone = ? WHERE matricula = ?"""
     cursor.execute(query, (nome, idade, email, telefone, matricula))
+    conn.commit()
     cursor.close()
     conn.close()
 
