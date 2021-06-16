@@ -43,7 +43,6 @@ def remover_aluno(matricula):
     conn.close()
 
 def editar_aluno(matricula, nome, idade, email, telefone):
-    print(matricula, nome, idade, email, telefone)
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
     query = """ UPDATE 'alunos' SET nome = ?, idade = ?, email = ?, telefone = ? WHERE matricula = ?"""
@@ -63,6 +62,12 @@ def consultar_alunos():
     return fetch
 
 
+
+
+
+
+
+
 # ---------- MATERIA -------------
 def table_materias():
     conn = sqlite3.connect('./universidade.db')
@@ -78,8 +83,8 @@ def table_materias():
 def inserir_materia(materia):
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ INSERT INTO 'materias' (materias) VALUES ? """
-    cursor.execute(query, (materia))
+    query = """ INSERT INTO 'materias' (materia) VALUES (?) """
+    cursor.execute(query, (materia, ))
     conn.commit()
     cursor.close()
     conn.close()
@@ -87,7 +92,7 @@ def inserir_materia(materia):
 def remover_materia(id_materia):
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ DELETE FROM 'materia' WHERE id_materia = ? """
+    query = """ DELETE FROM 'materias' WHERE id_materia = ? """
     cursor.execute(query, (id_materia, ))
     conn.commit()
     cursor.close()
@@ -98,18 +103,26 @@ def editar_materia(id_materia, materia):
     cursor = conn.cursor()
     query = """ UPDATE 'materias' SET materia = ? WHERE id_materia = ? """
     cursor.execute(query, (materia, id_materia))
+    conn.commit()
     cursor.close()
     conn.close()
 
 def consultar_materias():
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ SELECT * FROM alunos ORDER BY materia """
+    query = """ SELECT * FROM materias ORDER BY id_materia """
     cursor.execute(query)
     fetch = cursor.fetchall()
     cursor.close()
     conn.close()
     return fetch
+
+
+
+
+
+
+
 
 
 # ---------- NOTAS -------------
