@@ -195,11 +195,6 @@ def submitNota():
     if materia.get() == "" or av1.get() == 0 or av2.get() == 0 or avd.get() == 0:
         resultado = msb.showwarning("", "Por favor, digite todos os campos.", icon="warning")
     else:
-        if av3.get() == 0:
-            av3.set(0)
-    
-        if avds.get() == 0:
-            av3.set(0)
         tableNotas.delete(*tableNotas.get_children())
         bd.inserir_nota(av1.get(), av2.get(), av3.get(), avd.get(), avds.get(), media.get(), matricula.get(), materia.get())
         consultarNotas(getAluno())
@@ -221,15 +216,19 @@ def calcularMedia():
     notas =  [av1.get(), av2.get(), avd.get()]
     if av1.get() < av3.get() or av2.get() < av3.get():
         if av1.get() < av2.get():
+            notas.pop(0)
             notas.insert(0, av3.get())
         else:
+            notas.pop(1)
             notas.insert(1, av3.get())
     
     if avd.get() < avds.get():
+        notas.pop(2)
         notas.insert(2, avds.get())
     
     total = 0
     for nota in notas:
+        print(nota)
         total += nota
 
     media.set(total/len(notas))
@@ -261,7 +260,7 @@ def deletarNota():
             conteudo = (tableNotas.item(selectItem))
             selectedItem = conteudo['values']
             tableNotas.delete(selectItem)
-            bd.remover_nota(selectedItem[0])   
+            bd.remover_nota(getAluno(), selectedItem[0])   
             consultarNotas(getAluno())       
 
 def adicionarNota():
