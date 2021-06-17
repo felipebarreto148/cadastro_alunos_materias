@@ -26,7 +26,7 @@ app.config(bg='#167ec4')
 updateWindow = None
 
 
-    # --------- Alunos ----------
+# --------- Alunos ----------
 matricula = None
 nome = StringVar()
 idade = StringVar()
@@ -176,11 +176,12 @@ av3 = DoubleVar()
 avd = DoubleVar()
 avds = DoubleVar()
 media = DoubleVar()
-matricula = IntVar()
-materia = StringVar()
+matricula = StringVar()
 
 winNotas = None
 tableNotas = None
+updateWindow = None
+
 
 # -------- Métodos --------
 def consultarNotas(matricula):
@@ -207,7 +208,18 @@ def submitNota():
         media.set("")
         
 def updateNota():
-    pass
+    getAluno()
+    calcularMedia()
+    tableNotas.delete(*tableNotas.get_children())
+    bd.editar_nota(int(matricula.get()), str(materia.get()), av1.get(), av2.get(), av3.get(), avd.get(), avds.get(), media.get())
+    materia.set("")
+    av1.set("")
+    av2.set("")
+    av3.set("")
+    avd.set("")
+    avds.set("")
+    media.set("")
+    #updateWindow.destroy()
     consultarNotas(getAluno())
 
 
@@ -228,10 +240,10 @@ def calcularMedia():
     
     total = 0
     for nota in notas:
-        print(nota)
         total += nota
 
     media.set(total/len(notas))
+
 
 def getMaterias():
     global vSelect
@@ -306,29 +318,30 @@ def editarNota():
     if not tableNotas.selection():
         resultado = msb.showwarning('', 'Por favor, selecione um aluno na lista para editar.', icon="warning")
     else:
-        global matricula, updateWindow
-        selectItem = tableAlunos.focus()
-        conteudo = (tableAlunos.item(selectItem))
+        getMaterias()
+        getAluno()
+        global matricula
+        selectItem = tableNotas.focus()
+        conteudo = (tableNotas.item(selectItem))
         selectedItem = conteudo["values"]
-        matricula = selectedItem[0]
         materia.set("")
         av1.set("")
         av2.set("")
         av3.set("")
         avd.set("")
         avds.set("")
-        materia.set(selectedItem[1])
-        av1.set(selectedItem[2])
-        av2.set(selectedItem[3])
-        av3.set(selectedItem[4])
-        avd.set(selectedItem[5])
-        avds.set(selectedItem[6])
+        materia.set(selectedItem[0])
+        av1.set(selectedItem[1])
+        av2.set(selectedItem[2])
+        av3.set(selectedItem[3])
+        avd.set(selectedItem[4])
+        avds.set(selectedItem[5])
         
         #--------- CRIANDO JANELA UPDATE ---------
         updateWindow = Toplevel()
         updateWindow.title("Atualizar Notas")
         width = 400
-        height = 300
+        height = 400
         sc_width = updateWindow.winfo_screenwidth()
         sc_height = updateWindow.winfo_screenheight()
         x = (sc_width/2) - (width/2)
@@ -344,16 +357,16 @@ def editarNota():
         formContact.pack(side = TOP, pady = 10)
         
         # --------- LABEL DO Atualizar ----------
-        Label(formTitle, text="Inserindo Notas", font=('arial', 18), fg= '#ffffff', bg='#119922').pack(fill=X)
-        Label(formContact, text="Matéria", font=('arial', 12), bg='#119922', fg='#ffffff').grid(row=0, sticky=W, pady=8)
-        Label(formContact, text="av1", font=('arial', 12), bg='#119922', fg='#ffffff').grid(row=1, sticky=W, pady=8)
-        Label(formContact, text="av2", font=('arial', 12), bg='#119922', fg='#ffffff').grid(row=2, sticky=W, pady=8)
-        Label(formContact, text="av3", font=('arial', 12), bg='#119922', fg='#ffffff').grid(row=3, sticky=W, pady=8)
-        Label(formContact, text="avd", font=('arial', 12), bg='#119922', fg='#ffffff').grid(row=4, sticky=W, pady=8)
-        Label(formContact, text="avds", font=('arial', 12), bg='#119922', fg='#ffffff').grid(row=5, sticky=W, pady=8)
+        Label(formTitle, text="Inserindo Notas", font=('arial', 18), fg= '#ffffff', bg='#335599').pack(fill=X)
+        Label(formContact, text="Matéria", font=('arial', 12), bg='#335599', fg='#ffffff').grid(row=0, sticky=W, pady=8)
+        Label(formContact, text="av1", font=('arial', 12), bg='#335599', fg='#ffffff').grid(row=1, sticky=W, pady=8)
+        Label(formContact, text="av2", font=('arial', 12), bg='#335599', fg='#ffffff').grid(row=2, sticky=W, pady=8)
+        Label(formContact, text="av3", font=('arial', 12), bg='#335599', fg='#ffffff').grid(row=3, sticky=W, pady=8)
+        Label(formContact, text="avd", font=('arial', 12), bg='#335599', fg='#ffffff').grid(row=4, sticky=W, pady=8)
+        Label(formContact, text="avds", font=('arial', 12), bg='#335599', fg='#ffffff').grid(row=5, sticky=W, pady=8)
 
         # --------- ENTRY DO INCLUDE ----------
-        Entry(formContact, textvariable=materia, font=('arial', 12)).grid(row=0, column=1)
+        ttk.Combobox(formContact, textvariable=materia, values=vSelect).grid(row=0, column=1)
         Entry(formContact, textvariable=av1, font=('arial', 12)).grid(row=1, column=1)
         Entry(formContact, textvariable=av2, font=('arial', 12)).grid(row=2, column=1)
         Entry(formContact, textvariable=av3, font=('arial', 12)).grid(row=3, column=1)
@@ -426,6 +439,8 @@ def scNotas(event):
 #===========================================
 #===========================================
 
+
+Label(app, text="Para consultar a nota de um aluno, clique duas vezes nele", bg="#167ec4", font=("Arial"), fg="#ffffff").grid(row=0, columnspan=3)
 # ---------- Buttons Alunos ---------
 tk.Button(app, text="Incluir Aluno", bg="#009900", font=("Arial"), fg="#ffffff", command=adicionarAluno).grid(row=1, column=0, padx=8, pady=8)
 tk.Button(app, text="Editar Aluno", bg="#0000ff", font=("Arial"), fg="#ffffff", command=editarAluno).grid(row=2, column=0, padx=8, pady=8)

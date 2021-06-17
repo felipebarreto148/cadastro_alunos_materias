@@ -127,7 +127,7 @@ def table_notas():
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
     query = """ CREATE TABLE IF NOT EXISTS notas(
-        materia INTEGER,
+        materia TEXT NOT NULL,
         AV1 REAL NOT NULL,
         AV2 REAL NOT NULL,
         AV3 REAL NOT NULL,
@@ -165,13 +165,14 @@ def editar_nota(matricula_aluno, materia, av1, av2, av3, avd, avds, media):
     cursor = conn.cursor()
     query = """ UPDATE 'notas' SET av1 = ?, av2 = ?, av3 = ?, avd = ?, avds = ?, media = ? WHERE materia = ? AND matricula_aluno = ?"""
     cursor.execute(query, (av1, av2, av3, avd, avds, media, materia, matricula_aluno))
+    conn.commit()
     cursor.close()
     conn.close()
 
 def consultar_notas(matricula_aluno):
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ SELECT * FROM notas WHERE matricula_aluno = ? ORDER BY media """
+    query = """ SELECT * FROM notas WHERE matricula_aluno = ? ORDER BY media DESC """
     cursor.execute(query, (matricula_aluno, ))
     fetch = cursor.fetchall()
     cursor.close()
