@@ -154,7 +154,7 @@ tableMaterias.heading("id", text="ID", anchor=W)
 tableMaterias.heading("Materia", text="Materia", anchor=W)
 
 tableMaterias.column('#1', stretch=NO, minwidth=0, width=50)
-tableMaterias.column('#2', stretch=NO, minwidth=0, width=100)
+tableMaterias.column('#2', stretch=NO, minwidth=0, width=150)
 
 tableMaterias.grid(row=1, column=2, padx=(8, 0), pady=8, rowspan=3)
 #tableMaterias.bind('<Double-Button-1>', visualizarNotas)

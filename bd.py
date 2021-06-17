@@ -122,14 +122,12 @@ def consultar_materias():
 
 
 
-
-
-
 # ---------- NOTAS -------------
 def table_notas():
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
     query = """ CREATE TABLE IF NOT EXISTS notas(
+        materia INTEGER,
         AV1 REAL NOT NULL,
         AV2 REAL NOT NULL,
         AV3 REAL NOT NULL,
@@ -137,45 +135,44 @@ def table_notas():
         AVDS REAL NOT NULL,
         media REAL NOT NULL,
         matricula_aluno INTEGER,
-        id_materia INTEGER,
         FOREIGN KEY (matricula_aluno) REFERENCES alunos(matricula)
-        FOREIGN KEY (id_materia) REFERENCES materias(id_materia)
+        FOREIGN KEY (materia) REFERENCES materias(materia)
     ) """
     cursor.execute(query)
     conn.commit()
     conn.close()
 
-def inserir_nota(av1, av2, av3, avd, avds, media):
+def inserir_nota(av1, av2, av3, avd, avds, media, matricula, materia):
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """INSERT INTO 'notas' (AV1, AV2, AV3, AVD, AVDS, media) VALUES (?, ?, ?, ?, ?, ?, ?)"""
-    cursor.execute(query, (av1, av2, av3, avd, avds, media))
+    query = """INSERT INTO 'notas' (AV1, AV2, AV3, AVD, AVDS, media, matricula_aluno, materia) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"""
+    cursor.execute(query, (av1, av2, av3, avd, avds, media, matricula, materia))
     conn.commit()
     cursor.close()
     conn.close()
 
-def remover_nota(matricula_aluno, id_materia):
+def remover_nota(matricula_aluno, materia):
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ DELETE FROM 'notas' WHERE matricula_aluno = ? AND id_materia = ? """
-    cursor.execute(query, (matricula_aluno, id_materia, ))
+    query = """ DELETE FROM 'notas' WHERE matricula_aluno = ? AND materia = ? """
+    cursor.execute(query, (matricula_aluno, materia, ))
     conn.commit()
     cursor.close()
     conn.close()
 
-def editar_nota(matricula_aluno, id_materia, av1, av2, av3, avd, avds, media):
+def editar_nota(matricula_aluno, materia, av1, av2, av3, avd, avds, media):
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ UPDATE 'notas' SET av1 = ?, av2 = ?, av3 = ?, avd = ?, avds = ?, media = ? WHERE id_materia = ? AND matricula_aluno = ?"""
-    cursor.execute(query, (av1, av2, av3, avd, avds, media, id_materia, matricula_aluno))
+    query = """ UPDATE 'notas' SET av1 = ?, av2 = ?, av3 = ?, avd = ?, avds = ?, media = ? WHERE materia = ? AND matricula_aluno = ?"""
+    cursor.execute(query, (av1, av2, av3, avd, avds, media, materia, matricula_aluno))
     cursor.close()
     conn.close()
 
-def consultar_notas():
+def consultar_notas(matricula_aluno):
     conn = sqlite3.connect('./universidade.db')
     cursor = conn.cursor()
-    query = """ SELECT * FROM notas ORDER BY media """
-    cursor.execute(query)
+    query = """ SELECT * FROM notas WHERE matricula_aluno = ? ORDER BY media """
+    cursor.execute(query, (matricula_aluno, ))
     fetch = cursor.fetchall()
     cursor.close()
     conn.close()
