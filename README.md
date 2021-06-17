@@ -1,2 +1,5 @@
-# cadastro_alunos_materias
-Aplicação criada para incluir, remover, editar e visualizar alunos e suas respectivas notas em determinadas matérias
+<h1 align="center"> cadastro_alunos_materias </h1>
+<p align="center">Programas para cadastro de Matérias, Alunos e Notas.</p>
+
+
+[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
